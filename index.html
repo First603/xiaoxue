@@ -494,7 +494,7 @@ section.collapsed .report-empty{display:none}
       </button>
       <button class="btn btn-primary" id="btnAdd">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span class="btn-label">新增学员</span>
+        <span class="btn-label">新增档案</span>
       </button>
     </div>
   </div>
@@ -557,11 +557,11 @@ section.collapsed .report-empty{display:none}
       <div class="empty-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
-      <div class="empty-title" id="emptyTitle">还没有学员档案</div>
-      <div class="empty-text" id="emptyText">点击右上角「新增学员」，录入姓名、性别、年龄等信息，之后就能为每位学员添加报告单图片了。</div>
+      <div class="empty-title" id="emptyTitle">还没有防控档案，</div>
+      <div class="empty-text" id="emptyText">还没有防控档案，请点击右上角新增档案，之后就能记录防控信息和报告单图片了</div>
       <button class="btn btn-primary" id="btnAddEmpty">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        新增第一个学员
+        新增防控档案
       </button>
       <div class="empty-hint">数据只保存在本机浏览器中，建议定期「导出备份」防止丢失</div>
     </div>
@@ -760,7 +760,7 @@ section.collapsed .report-empty{display:none}
 <div class="modal-mask" id="studentModal" hidden>
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title" id="modalTitle">新增学员</div>
+      <div class="modal-title" id="modalTitle">新增档案</div>
       <button class="btn btn-sm" id="btnManageFields" title="调整选项顺序 / 删除选项">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
         管理字段
@@ -1325,8 +1325,8 @@ function renderList() {
     const empty = $("#emptyState");
     empty.hidden = false;
     if (state.students.length === 0) {
-      $("#emptyTitle").textContent = "还没有学员档案";
-      $("#emptyText").textContent = "点击右上角「新增学员」，录入姓名、性别、年龄等信息，之后就能为每位学员添加报告单图片了。";
+      $("#emptyTitle").textContent = "还没有防控档案，";
+      $("#emptyText").textContent = "还没有防控档案，请点击右上角新增档案，之后就能记录防控信息和报告单图片了";
       $("#btnAddEmpty").hidden = false;
     } else {
       $("#emptyTitle").textContent = "没有匹配的学员";
@@ -2411,7 +2411,7 @@ let editingId = null;
 function openStudentModal(id) {
   editingId = id;
   const s = id ? state.students.find((x) => x.id === id) : null;
-  $("#modalTitle").textContent = s ? "编辑学员资料" : "新增学员";
+  $("#modalTitle").textContent = s ? "编辑学员资料" : "新增档案";
   $("#fName").value = s ? (s.name || "") : "";
   $("#fBirth").value = s ? (s.birth || "") : "";
   $("#fPhone").value = s ? (s.phone || "") : "";
@@ -2886,14 +2886,14 @@ function estimateMerge(payload) {
     (state.images[s.id] || []).forEach((im) => localImgKeys.add(s.id + "|" + (im.name || "") + "|" + (im.createdAt || "")));
   });
   const bidToLocal = new Map();
-  const seenNewImg = new Set();   // 新增学员的图片去重
+  const seenNewImg = new Set();   // 新增档案的图片去重
   let update = 0, add = 0;
   (payload.students || []).forEach((bs) => {
     if (!bs || bs.name === undefined) return;
     const k = (bs.name || "") + "|" + (bs.birth || "");
     const lid = localKeys.get(k);
     if (lid != null && !used.has(lid)) { used.add(lid); bidToLocal.set(bs.id, lid); update++; }
-    else { add++; bidToLocal.set(bs.id, "NEW"); }   // 新增学员的图片也会一并导入
+    else { add++; bidToLocal.set(bs.id, "NEW"); }   // 新增档案的图片也会一并导入
   });
   let imgAdd = 0, imgSkip = 0;
   (payload.images || []).forEach((im) => {
@@ -3150,7 +3150,7 @@ async function reloadAll() {
 
 /* ---------- 事件绑定 ---------- */
 function bindEvents() {
-  // 新增学员
+  // 新增档案
   $("#btnAdd").addEventListener("click", () => openStudentModal(null));
   $("#btnAddEmpty").addEventListener("click", () => openStudentModal(null));
 
